@@ -27,6 +27,16 @@ Dieses Projekt wird von **zwei Leuten** entwickelt, jeweils mit eigenem Claude. 
 
 Weitere Dateien: `impressum.html`, `datenschutz.html` (teilen sich `legal.css`), verlinkt unten im Startbildschirm.
 
+### Drift-Modus (`drift.html`)
+
+Eigener Spielmodus in eigener Datei (Ausnahme von „eine Datei“, damit sich beide nicht in `index.html` in die Quere kommen). Erreichbar über den Knopf **DRIFT** oben rechts in der Garage (`#btnDrift`), zurück über „◀ Garage“.
+
+- Draufsicht statt Seitenansicht, eigene Physik (Driftwinkel, Combo ×5, Wandkuss), Cockpit unten (Gang, Drehzahl, Tacho, Pedale, Schaltwippen), Schalter oder Automatik.
+- Drei Stationen: **Parkhaus** (4 Ebenen, Freier Modus + Rennen gegen Bots), **Bergstraße** (endlos, Serpentinen, Abgrund, Leitplanken, Steigung), **Stadt** (Ampeln, Verkehr, Freier Modus + **Police Chase**).
+- Eigenes Drift-Tuning (Motor, Fahrwerk, Lenkwinkel, Lackierung) und eigener Speicherstand: `localStorage` `querstehen-v1` (Garage nutzt `ptg-build-v1`, nichts überschneidet sich).
+- Schrift VT323 lokal aus `fonts/`, keine externen Anfragen. Handy hochkant → Spiel dreht sich selbst ins Querformat.
+- Ausführliches Spielkonzept: Claude-Projekt „auto drift spiel“ (`spielkonzept.md`).
+
 ## Regeln für die Arbeit
 
 - **Pixel-Look beibehalten:** harte Kanten, keine Unschärfe, keine Anti-Aliasing-Effekte. Neue Grafik wird per Code gezeichnet, im Stil der vorhandenen Helfer.
@@ -45,6 +55,7 @@ Weitere Dateien: `impressum.html`, `datenschutz.html` (teilen sich `legal.css`),
 ### Wer macht gerade was
 
 - Till: …
+- Drift-Modus (`drift.html` + Knopf DRIFT in `index.html`): neu dazugekommen
 - (Kumpel): …
 
 ## Offene Punkte / Ideen
