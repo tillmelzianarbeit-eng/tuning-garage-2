@@ -47,6 +47,7 @@ Dieses Projekt wird von **zwei Leuten** entwickelt, jeweils mit eigenem Claude. 
 
 ## Offene Punkte / Ideen
 
+- `noindex` im `<head>` entfernen, sobald das Spiel bei Google auffindbar sein soll (aktuell bewusst gesperrt, solange es in Arbeit ist)
 - Google Fonts lokal einbinden statt von fonts.googleapis.com laden (DSGVO, wichtig vor der Veröffentlichung)
 - Weitere Basisautos (Vorbilder: alte Autos wie Twingo 1, Passat 3BG)
 - Foto-Import weiter verbessern
