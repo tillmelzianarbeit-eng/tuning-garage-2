@@ -29,6 +29,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulatio
 .fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .25s;z-index:30}.fade.on{opacity:1}
 #game.on-track #btnTools{display:none}
 .tbx.trk span{color:var(--acc2)}
+.tbx.drf span{color:#ff4d2e}
 .mini{width:40px;height:40px;background:rgba(18,15,23,.78);border:3px solid #0d0a10;box-shadow:inset 0 0 0 2px var(--line);font:10px 'Press Start 2P',monospace;color:var(--acc2)}
 .mini.off{color:#5a5266;text-decoration:line-through}
 /* unten: Pedale, Start, Schaltung, NOS */
@@ -165,6 +166,7 @@ body.noscroll{overflow:hidden}
   <div class="hud-tr">
     <button id="btnMute" class="mini" aria-label="Ton an/aus">TON</button>
     <button id="btnTrack" class="tbx trk" aria-label="Rennstrecke / Garage"><svg viewBox="0 0 16 13" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="0" width="2" height="13" fill="#0d0a10"/><rect x="1" y="0" width="1" height="13" fill="#9aa3ad"/><rect x="3" y="0" width="13" height="9" fill="#0d0a10"/><rect x="4" y="1" width="3" height="2" fill="#1b1b20"/><rect x="7" y="1" width="3" height="2" fill="#f1ede4"/><rect x="10" y="1" width="3" height="2" fill="#1b1b20"/><rect x="13" y="1" width="3" height="2" fill="#f1ede4"/><rect x="4" y="3" width="3" height="2" fill="#f1ede4"/><rect x="7" y="3" width="3" height="2" fill="#1b1b20"/><rect x="10" y="3" width="3" height="2" fill="#f1ede4"/><rect x="13" y="3" width="3" height="2" fill="#1b1b20"/><rect x="4" y="5" width="3" height="2" fill="#1b1b20"/><rect x="7" y="5" width="3" height="2" fill="#f1ede4"/><rect x="10" y="5" width="3" height="2" fill="#1b1b20"/><rect x="13" y="5" width="3" height="2" fill="#f1ede4"/><rect x="4" y="7" width="3" height="2" fill="#f1ede4"/><rect x="7" y="7" width="3" height="2" fill="#1b1b20"/><rect x="10" y="7" width="3" height="2" fill="#f1ede4"/><rect x="13" y="7" width="3" height="2" fill="#1b1b20"/></svg><span>RENNEN</span></button>
+    <button id="btnDrift" class="tbx drf" aria-label="Drift-Modus öffnen"><svg viewBox="0 0 16 13" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="7" width="3" height="3" fill="#9aa3ad"/><rect x="2" y="3" width="4" height="4" fill="#e9eef3"/><rect x="1" y="9" width="5" height="3" fill="#c9d0d8"/><rect x="4" y="7" width="3" height="3" fill="#e9eef3"/><rect x="7" y="2" width="8" height="10" fill="#0d0a10"/><rect x="8" y="1" width="6" height="12" fill="#0d0a10"/><rect x="9" y="3" width="4" height="7" fill="#3a3f47"/><rect x="10" y="4" width="2" height="5" fill="#c9d0d8"/><rect x="8" y="2" width="1" height="1" fill="#5c6168"/><rect x="13" y="10" width="1" height="1" fill="#5c6168"/></svg><span>DRIFT</span></button>
     <button id="btnTools" class="tbx" aria-label="Werkzeugkasten öffnen"><svg viewBox="0 0 16 13" shape-rendering="crispEdges" aria-hidden="true"><rect x="3" y="0" width="10" height="4" fill="#0d0a10"/><rect x="4" y="1" width="8" height="1" fill="#c9d0d8"/><rect x="4" y="2" width="1" height="2" fill="#c9d0d8"/><rect x="11" y="2" width="1" height="2" fill="#c9d0d8"/><rect x="0" y="3" width="16" height="10" fill="#0d0a10"/><rect x="1" y="4" width="14" height="3" fill="#d8443a"/><rect x="1" y="4" width="14" height="1" fill="#f0796b"/><rect x="1" y="7" width="14" height="5" fill="#a12a22"/><rect x="1" y="9" width="14" height="1" fill="#6e1a14"/><rect x="6" y="6" width="4" height="2" fill="#e9eef3"/><rect x="2" y="10" width="2" height="1" fill="#c0362c"/><rect x="12" y="10" width="2" height="1" fill="#c0362c"/></svg><span>TUNING</span></button>
   </div>
   <div class="ctl-l">
@@ -1099,6 +1101,7 @@ function initUI() {
   $('#opts').addEventListener('click', e => { const d = e.target.closest('[data-del]'); if (!d) return; const id = d.dataset.del; if (delArm !== id) { delArm = id; renderOpts(); return; } delArm = null; deleteCustom(id); });
   $('#btnTools').addEventListener('click', () => openMenu(true));
   $('#btnTrack').addEventListener('click', () => setMode(MODE === 'track' ? 'garage' : 'track'));
+  $('#btnDrift').addEventListener('click', () => { location.href = 'drift.html'; });
   $('#menuClose').addEventListener('click', () => openMenu(false));
   $('#btnStart').addEventListener('click', toggleEngine);
   holdBtn($('#pedGas'), () => { ensureOn(); gasHeld = true; }, () => { gasHeld = false; });
