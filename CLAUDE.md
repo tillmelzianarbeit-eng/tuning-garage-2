@@ -50,7 +50,7 @@ Weitere Dateien: `impressum.html`, `datenschutz.html` (teilen sich `legal.css`),
 ## Offene Punkte / Ideen
 
 - `noindex` im `<head>` entfernen, sobald das Spiel bei Google auffindbar sein soll (aktuell bewusst gesperrt, solange es in Arbeit ist)
-- Platzhalter in `impressum.html` und `datenschutz.html` ([VORNAME NACHNAME], [STRASSE HAUSNUMMER], [PLZ ORT], [E-MAIL]) mit echten Daten füllen, bevor der Link geteilt wird
+- Impressum/Datenschutz nennen bisher nur Till als Verantwortlichen; ggf. Kumpel ergänzen
 - Kommen neue Dienste dazu (Analytics, Online-Speicher, Bestenliste, externe Bibliotheken), muss `datenschutz.html` angepasst werden
 - Weitere Basisautos (Vorbilder: alte Autos wie Twingo 1, Passat 3BG)
 - Foto-Import weiter verbessern
