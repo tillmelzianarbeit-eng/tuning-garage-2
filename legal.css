@@ -1,0 +1,13 @@
+@font-face{font-family:'Press Start 2P';src:url('fonts/PressStart2P-Regular.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'VT323';src:url('fonts/VT323-Regular.woff2') format('woff2');font-display:swap}
+:root{--bg:#120f17;--panel:#1d1824;--line:#3a3148;--txt:#f1e9da;--dim:#9b8fa8;--acc2:#36e0d0;--yel:#ffcc3d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:'VT323',ui-monospace,monospace;font-size:21px;line-height:1.35}
+main{max-width:760px;margin:0 auto;padding:28px 20px calc(40px + env(safe-area-inset-bottom))}
+h1{font:16px/1.5 'Press Start 2P',monospace;color:var(--yel);text-shadow:3px 3px 0 #a3261f;margin:10px 0 24px}
+h2{font:11px/1.6 'Press Start 2P',monospace;color:var(--acc2);margin:28px 0 8px}
+p,li{margin:0 0 10px}
+a{color:var(--acc2)}
+.back{display:inline-block;font:9px 'Press Start 2P',monospace;color:var(--txt);text-decoration:none;background:var(--panel);border:2px solid var(--line);padding:10px 12px}
+.box{background:var(--panel);border:2px solid var(--line);padding:12px 14px}
+small{color:var(--dim)}

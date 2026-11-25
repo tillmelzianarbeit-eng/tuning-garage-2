@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex, nofollow">
 <title>Pixel Tuning Garage</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
+/* Schriften lokal eingebunden (keine Verbindung zu Google, DSGVO) */
+@font-face{font-family:'Press Start 2P';src:url('fonts/PressStart2P-Regular.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'VT323';src:url('fonts/VT323-Regular.woff2') format('woff2');font-display:swap}
 :root{--bg:#120f17;--panel:#1d1824;--panel2:#262030;--line:#3a3148;--txt:#f1e9da;--dim:#9b8fa8;--acc:#ff4f6d;--acc2:#36e0d0;--yel:#ffcc3d;--paint:#2fa36b;--mw:min(540px,56vw)}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:#000;color:var(--txt);font-family:'VT323',ui-monospace,monospace;font-size:20px;line-height:1.15;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
@@ -145,6 +145,9 @@ body.noscroll{overflow:hidden}
 .splash h1{font:clamp(16px,3.6vw,34px)/1.3 'Press Start 2P',monospace;color:var(--yel);text-shadow:4px 4px 0 #a3261f;margin:0}
 .splash p{font:clamp(9px,1.5vw,13px) 'Press Start 2P',monospace;margin:0;animation:blink 1.1s steps(2) infinite}
 .splash small{color:var(--dim);font-size:17px;max-width:640px}
+.legal{position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:0;right:0;display:flex;justify-content:center;gap:18px;font-size:17px}
+.legal a{color:var(--dim);text-decoration:underline;padding:6px}
+.legal a:hover{color:var(--txt)}
 @keyframes blink{50%{opacity:.25}}
 .rotate{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:#120f17;text-align:center;padding:30px}
 .rotate p{font:11px/1.8 'Press Start 2P',monospace;color:var(--yel);margin:0}
@@ -182,6 +185,7 @@ body.noscroll{overflow:hidden}
     <h1>PIXEL TUNING<br>GARAGE</h1>
     <p>TIPPEN ZUM STARTEN</p>
     <small>Start/Stop für den Motor, rechts Gas, links Bremse. Oben rechts im Werkzeugkasten wird getunt. Mit RENNEN geht's auf die Strecke. Am PC: Leertaste Gas · S Bremse · Pfeile schalten · E Motor · N Lachgas · T Werkzeugkasten · R Rennstrecke</small>
+    <nav class="legal" aria-label="Rechtliches"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
   </div>
 </div>
 <div class="rotate"><div class="phone"></div><p>BITTE DREH DEIN HANDY<br>INS QUERFORMAT</p></div>
@@ -1103,7 +1107,7 @@ function initUI() {
   holdBtn($('#gUp'), () => shiftTo(DRV.gear + 1), () => { });
   holdBtn($('#gDn'), () => shiftTo(DRV.gear - 1), () => { });
   $('#btnMute').addEventListener('click', toggleMute);
-  $('#splash').addEventListener('click', () => { initAudio(); if (AC && AC.state === 'suspended') AC.resume(); goFull(); $('#splash').classList.add('hidden'); });
+  $('#splash').addEventListener('click', e => { if (e.target.closest('.legal')) return; initAudio(); if (AC && AC.state === 'suspended') AC.resume(); goFull(); $('#splash').classList.add('hidden'); });
   const typing = e => /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) && e.target.type !== 'range';
   const keyCls = (id, on) => { const el = $(id); if (el) el.classList.toggle('down', on); };
   window.addEventListener('keydown', e => {

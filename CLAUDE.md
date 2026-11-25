@@ -10,7 +10,7 @@ Dieses Projekt wird von **zwei Leuten** entwickelt, jeweils mit eigenem Claude. 
 - **Eine einzige Datei:** `index.html` mit HTML, CSS und JavaScript (Vanilla JS, `'use strict'`). Kein Framework, kein Build-Schritt.
 - **Rendering:** Canvas `#c` mit 480 × 270 interner Auflösung, hochskaliert mit `image-rendering: pixelated`. Bodenlinie `GY = 226`.
 - **Grafik wird per Code gezeichnet**, ohne Sprite-Dateien. Dafür gibt es Pixel-Helfer (`pcirc`, `pxEllipse`, `pline`, `crisp` für harte Kanten und Outline) und eine eigene 3×5-Pixelschrift (`FONT`, `ptext`).
-- **Schriften:** „Press Start 2P“ und „VT323“.
+- **Schriften:** „Press Start 2P“ und „VT323“, lokal im Ordner `fonts/` (woff2, SIL Open Font License). Keine externen Anfragen, keine CDNs.
 - **Steuerung:** Touch-Buttons (Gas, Bremse, Start/Stop, Schaltung, NOS) und Tastatur (Leertaste Gas · S Bremse · Pfeile schalten · E Motor · N Lachgas · T Werkzeugkasten · R Rennstrecke).
 
 ## Aufbau des Codes (in `index.html`)
@@ -23,7 +23,9 @@ Dieses Projekt wird von **zwei Leuten** entwickelt, jeweils mit eigenem Claude. 
 | `CATS` | Menüstruktur des Werkzeugkastens (Auto, Motor, Auspuff, Getriebe, Fahrwerk, Felgen, Karosserie, Optik) mit Teilen und Preisen |
 | `defaults()` / `S` | Aktueller Tuningzustand des Autos |
 | `calc()` | Berechnet PS, Gewicht, Vmax, 0–100, Handling, Style, Rechnung und Titel |
-| Editor (`#ed`) | Mehrstufiger Editor für eigene Autos (Foto-Import) |
+| Editor (`#ed`) | Mehrstufiger Editor für eigene Autos (Foto-Import, läuft nur lokal im Browser) |
+
+Weitere Dateien: `impressum.html`, `datenschutz.html` (teilen sich `legal.css`), verlinkt unten im Startbildschirm.
 
 ## Regeln für die Arbeit
 
@@ -48,7 +50,8 @@ Dieses Projekt wird von **zwei Leuten** entwickelt, jeweils mit eigenem Claude. 
 ## Offene Punkte / Ideen
 
 - `noindex` im `<head>` entfernen, sobald das Spiel bei Google auffindbar sein soll (aktuell bewusst gesperrt, solange es in Arbeit ist)
-- Google Fonts lokal einbinden statt von fonts.googleapis.com laden (DSGVO, wichtig vor der Veröffentlichung)
+- Platzhalter in `impressum.html` und `datenschutz.html` ([VORNAME NACHNAME], [STRASSE HAUSNUMMER], [PLZ ORT], [E-MAIL]) mit echten Daten füllen, bevor der Link geteilt wird
+- Kommen neue Dienste dazu (Analytics, Online-Speicher, Bestenliste, externe Bibliotheken), muss `datenschutz.html` angepasst werden
 - Weitere Basisautos (Vorbilder: alte Autos wie Twingo 1, Passat 3BG)
 - Foto-Import weiter verbessern
 - …
