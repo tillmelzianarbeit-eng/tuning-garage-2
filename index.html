@@ -260,7 +260,8 @@ const MODELS = {
     doors: [[47, -41, -2], [135, -40, -2]], handles: [[53, -34]], mirror: [127, -43],
     head: [170, -29, 8, 6], ind: [172, -22, 5, 2], tail: [0, -44, 4, 12],
     bumpers: [[0, 9, -15, 0], [167, 180, -15, 0]], molding: [9, 167, -20, 3], num: [92, -24], fuel: [24, -33],
-    spoiler: { x: 9, y: -62, type: 'roof' }, hood: [[138, -40], [156, -35], [170, -31], [177, -27]], scoop: 146, blower: 150, exh: [5, -2]
+    spoiler: { x: 9, y: -62, type: 'roof' }, hood: [[138, -40], [156, -35], [170, -31], [177, -27]], scoop: 146, blower: 150, exh: [5, -2],
+    wid: 82, fr: { lamp: 'trap', grille: 'slit', intake: 'trap', hatch: 1, antenna: 1, prof: [[0, .88], [.15, .96], [.5, 1], [.9, .98], [1, .9]], gprof: [[0, .86], [.8, .7], [1, .6]] }
   },
   varo: {
     name: "Varo '01", desc: 'Mittelklasse · Limousine', L: 258, rw: 55, fw: 203, tire: 17, dy: 7, rimBase: 15, ps: 130, kg: 1350, cyl: 4, red: 6500, hand: 44, aero: 1.06, defStoss: 'lack', defColor: '#c8ccd2',
@@ -270,7 +271,20 @@ const MODELS = {
     doors: [[65, -45, -3], [131, -45, -3], [197, -45, -4]], handles: [[72, -38], [138, -38]], mirror: [189, -47],
     head: [246, -36, 10, 6], ind: [249, -29, 7, 2], tail: [0, -37, 7, 7],
     bumpers: [[0, 11, -17, 0], [243, 258, -18, 0]], molding: [12, 243, -19, 2], num: [164, -27], fuel: [38, -34],
-    spoiler: { x: 6, y: -41, type: 'trunk' }, hood: [[200, -46], [232, -41], [248, -38], [255, -33]], scoop: 212, blower: 216, exh: [6, -2]
+    spoiler: { x: 6, y: -41, type: 'trunk' }, hood: [[200, -46], [232, -41], [248, -38], [255, -33]], scoop: 212, blower: 216, exh: [6, -2],
+    wid: 88, fr: { lamp: 'twin', grille: 'bars', intake: 'center', hatch: 0, antenna: 1, prof: [[0, .9], [.12, .97], [.5, 1], [.9, .99], [1, .94]], gprof: [[0, .84], [.85, .62], [1, .52]] }
+  },
+  falke: {
+    name: 'Falke RS', desc: 'Sportwagen · Coupé', L: 232, rw: 46, fw: 182, tire: 16, dy: 5, rimBase: 19, ps: 520, kg: 1450, cyl: 6, red: 9000, hand: 62, aero: .98, defStoss: 'lack', defColor: '#ff7a1a',
+    out: [[4, 0], [1, -5], [0, -18], [2, -26], [6, -32], [22, -34], [42, -37], [62, -46], [80, -52], [114, -53], [136, -49], [160, -35], [192, -30], [213, -25], [225, -20], [230, -14], [232, -8], [230, 0]],
+    glass: [[53, -37], [64, -45], [72, -49], [83, -50], [113, -50], [133, -47], [154, -37]],
+    pillars: [[69, 74]], belt: -37, crease: -32,
+    doors: [[77, -37, -2], [156, -35, -2]], handles: [[83, -30]], mirror: [152, -37],
+    head: [210, -23, 16, 4], ind: [214, -17, 5, 2], tail: [0, -26, 4, 5],
+    bumpers: [[0, 9, -10, 0], [214, 232, -8, 0]], molding: [9, 214, -12, 2], num: [116, -18], fuel: [30, -26],
+    spoiler: { x: 10, y: -32, type: 'trunk' }, hood: [[160, -35], [192, -30], [213, -25], [225, -20]], scoop: 172, blower: 176, exh: [16, -1],
+    wing: true, sport: true, intake: [[67, -11], [74, -25], [75, -11]],
+    wid: 98, fr: { lamp: 'slim', grille: 'none', intake: 'race', hatch: 0, prof: [[0, .86], [.2, .97], [.45, 1], [.75, .95], [1, .8]], gprof: [[0, .72], [.8, .55], [1, .45]] }
   }
 };
 MODELS.kombi = Object.assign({}, MODELS.varo, {
@@ -347,7 +361,7 @@ let S = defaults();
 const rimColor = id => id === 'wagen' ? S.farbe : RIMC[id];
 
 // ================= STATS =================
-function engInfo() { const M = MODELS[S.model], E = ENGINES[S.motor]; return { cyl: E.cyl ?? M.cyl, red: E.red ?? M.red, ps: E.ps ?? M.ps, kg: E.kg }; }
+function engInfo() { const M = MODELS[S.model], E = ENGINES[S.motor]; return { cyl: E.cyl ?? M.cyl, red: E.ps ? Math.max(E.red, M.red) : M.red, ps: E.ps ? Math.max(E.ps, Math.round(M.ps * 1.08)) : M.ps, kg: E.kg }; }
 function calc() {
   const M = MODELS[S.model], E = engInfo(), jet = S.motor === 'jet';
   const A = jet ? [1, 0] : AUFL[S.aufl], X = EXH[S.auspuff];
@@ -697,7 +711,25 @@ function drawBodykit(g, M, ox, sill, archR, acy, base) {
   }
 }
 
-function renderCar() {
+// Falke RS: Werksflügel, Lufteinlass, Kotflügel-Kiemen und schwarze Werks-Aero
+function drawFalkeExtras(g, M, ox, sill, archR, acy, base) {
+  const DK = '#141518', kit = S.bodykit;
+  g.fillStyle = '#121316'; fillPoly(g, M.intake.map(([x, y]) => [ox + x, sill + y])); g.fillStyle = '#2a2c31'; g.fillRect(ox + M.intake[0][0] + 2, sill + M.intake[0][1] - 2, 6, 1);
+  const vx = ox + M.fw - 7, vy = acy - archR - 6; for (let i = 0; i < 4; i++) pline(g, vx + i * 4, vy, vx + i * 4 + 2, vy + 4, '#121316');
+  if (kit === 'kein') {
+    if (S.schweller !== 'ja') { g.fillStyle = DK; g.fillRect(ox + M.rw + archR - 2, sill - 3, M.fw - M.rw - 2 * archR + 4, Math.min(GY - 1, sill + 2) - sill + 4); }
+    if (S.lippe === 'kein') { g.fillStyle = DK; fillPoly(g, [[ox + M.L - 36, sill - 2], [ox + M.L + 3, sill - 2], [ox + M.L + 3, Math.min(GY, sill + 2)], [ox + M.L - 36, Math.min(GY, sill + 2)]]); }
+    g.fillStyle = DK; fillPoly(g, [[ox - 2, sill - 3], [ox + 20, sill - 3], [ox + 22, Math.min(GY, sill + 2)], [ox - 2, Math.min(GY, sill + 2)]]); g.fillStyle = '#3a3d43'; for (let x = ox + 1; x < ox + 18; x += 4) g.fillRect(x, sill - 5, 1, 3);
+  }
+  if (S.heck === 'kein' && kit !== 'breit') {
+    const ax = ox + M.spoiler.x, ay = sill + M.spoiler.y, py = ay - 17;
+    g.fillStyle = DK; fillPoly(g, [[ax + 11, ay], [ax + 14, ay], [ax + 17, py], [ax + 14, py]]); fillPoly(g, [[ax + 24, ay - 1], [ax + 27, ay - 1], [ax + 30, py], [ax + 27, py]]);
+    g.fillStyle = base; fillPoly(g, [[ax - 8, py], [ax + 35, py - 2], [ax + 35, py + 1], [ax - 8, py + 3]]); g.fillStyle = shade(base, .35); g.fillRect(ax - 8, py + 2, 43, 1); g.fillStyle = DK; g.fillRect(ax - 8, py - 1, 43, 1);
+    g.fillStyle = base; fillPoly(g, [[ax - 11, py - 5], [ax - 7, py - 5], [ax - 7, py + 6], [ax - 11, py + 4]]);
+  }
+}
+
+function renderSide() {
   const M = MODELS[S.model];
   const off = S.fahrwerk === 'offroad';
   const tireR = Math.round(M.tire + (S.zoll - M.rimBase) * .3 + (off ? 3 : 0) + (S.reifen === 'offroad' ? 1 : 0));
@@ -757,7 +789,7 @@ function renderCar() {
   b.globalCompositeOperation = 'source-over';
   { const [mx, myy] = M.mirror, X = ox + mx, Y = sill + myy; b.fillStyle = shade(base, .02); b.fillRect(X - 3, Y - 4, 6, 4); b.fillStyle = shade(base, .2); b.fillRect(X - 3, Y - 4, 6, 1); b.fillStyle = '#1a1a1e'; b.fillRect(X - 3, Y, 6, 1); }
   // start number
-  if (S.nummer !== '') { b.globalCompositeOperation = 'source-atop'; const cx = ox + M.num[0], cy = sill + M.num[1]; pcirc(b, cx, cy, 8, '#f4f1e8'); const str = String(S.nummer).slice(0, 2); ptext(b, str, cx - (ptw(str, 2) >> 1), cy - 5, 2, '#141418'); }
+  if (S.nummer !== '') { b.globalCompositeOperation = 'source-atop'; const cx = ox + M.num[0], cy = sill + M.num[1]; pcirc(b, cx, cy, 8, '#f4f1e8'); const str = String(S.nummer).slice(0, 2); (viewOf() === 2 ? ptextMirror : ptext)(b, str, cx - (ptw(str, 2) >> 1), cy - 5, 2, '#141418'); }
   }
   // cut wheel arches
   b.globalCompositeOperation = 'destination-out';
@@ -782,6 +814,7 @@ function renderCar() {
   if (S.lippe === 'splitter') { g.fillStyle = carbonC; fillPoly(g, [[fx - 22, fs - 1], [fx + 5, fs - 1], [fx + 6, Math.min(GY, fs + 2)], [fx - 22, Math.min(GY, fs + 2)]]); g.fillStyle = '#4a4e57'; g.fillRect(fx - 22, fs - 1, 27, 1); }
   drawSpoiler(g, M, ox, sill, base);
   drawBodykit(g, M, ox, sill, archR, acy, base);
+  if (M.sport) drawFalkeExtras(g, M, ox, sill, archR, acy, base);
   if (S.aufl === 'kompressor' && S.motor !== 'jet') {
     const X = ox + M.blower, Y = Math.round(sill + hoodY(M, M.blower)) + 1;
     g.fillStyle = '#aeb6bf'; g.fillRect(X - 10, Y - 9, 22, 9); for (let i = 0; i < 22; i += 3) { g.fillStyle = '#7b838d'; g.fillRect(X - 10 + i, Y - 8, 1, 7); }
@@ -797,6 +830,179 @@ function renderCar() {
   crisp(car, '#0d0a10', ox - 40, sill - (M.h || 75) - 40, M.L + 80, GY - sill + (M.h || 75) + 46);
   GEO = { M, ox, sill, wcy, tireR, rimR, archR, emit };
 }
+
+// ================= ANSICHTEN: Auto drehen (links / vorne / rechts / hinten) =================
+const VIEWNAMES = ['LINKS', 'VORNE', 'RECHTS', 'HINTEN'];
+let CARVIEW = 0, TURN = null, viewLabelT = 0;
+const flipC = mk(W, H);
+function viewOf() { return MODE === 'track' || MODELS[S.model].custom ? 0 : CARVIEW; }
+function rotateView(dir) { if (MODE !== 'garage' || TURN || MODELS[S.model].custom) return; TURN = { t: 0, to: (CARVIEW + dir + 4) % 4, swapped: false }; viewLabelT = 2.5; }
+function ptextMirror(g, str, x, y, s, col) { // spiegelverkehrt zeichnen, damit es nach dem Spiegeln lesbar ist
+  g.fillStyle = col; const w = ptw(str, s); let k = 0; x = Math.round(x); y = Math.round(y);
+  for (const ch of str) { const gl = FONT[ch]; const gx = x + w - k * 4 * s - 3 * s; if (gl) for (let r = 0; r < 5; r++) for (let c = 0; c < 3; c++) if (gl[r][c] === '1') g.fillRect(gx + (2 - c) * s, y + r * s, s, s); k++; }
+}
+function renderCar() {
+  const v = viewOf();
+  if (v === 1 || v === 3) { renderFR(v === 3); return; }
+  renderSide();
+  if (v === 2) {
+    if (flipC.width !== W) flipC.width = W;
+    const f = flipC.getContext('2d'); f.clearRect(0, 0, W, H); f.drawImage(car, 0, 0);
+    cg.save(); cg.setTransform(-1, 0, 0, 1, W, 0); cg.clearRect(0, 0, W, H); cg.drawImage(flipC, 0, 0); cg.restore();
+    GEO.emit = GEO.emit.map(e => Object.assign({}, e, { x: W - e.x, dx: -e.dx }));
+  }
+}
+function renderFR(rear) {
+  const M = MODELS[S.model], F = M.fr || FR_DEFAULT, g = cg;
+  const off = S.fahrwerk === 'offroad';
+  const tireR = Math.round(M.tire + (S.zoll - M.rimBase) * .3 + (off ? 3 : 0) + (S.reifen === 'offroad' ? 1 : 0));
+  const lift = Math.round(S.hoehe / 10), wcy = GY - tireR;
+  let sill = wcy + M.dy - lift; if (sill > GY - 1) sill = GY - 1;
+  const ox = Math.round((W - M.L) / 2), archR = Math.max(M.tire + 3, tireR + 2) + (S.breitbau === 'ja' ? 1 : 0);
+  const pc = S.farbe, fin = S.finish, on = ENG.on, DK = '#15161a', MESH = '#2b2d33';
+  const minY = Math.min(...M.out.map(p => p[1]));
+  const s = GY - sill, bl = s - M.belt, top = s - minY, hw = M.wid / 2, R = tireR;
+  const kit = S.bodykit, flare = Math.max(S.breitbau === 'ja' ? 4 : 0, kit === 'breit' ? 7 : kit === 'rallye' ? 5 : 0);
+  const tw = Math.round(10 + Math.max(0, S.zoll - M.rimBase) * .8 + (flare ? 2 : 0) + (S.reifen === 'offroad' ? 2 : 0)), tx = Math.round(hw - tw / 2 + flare * .6), H2 = 2 * R;
+  // Querschnitt der Karosserie (rechte Hälfte, unten → oben)
+  const prof = F.prof.map(([t, f]) => [f * hw, s + t * (bl - s)]); F.gprof.forEach(([t, f], i) => { if (i) prof.push([f * hw, bl + t * (top - bl)]); });
+  const hwAt = y => { if (y <= prof[0][1]) return prof[0][0]; for (let i = 1; i < prof.length; i++) if (y <= prof[i][1]) { const a = prof[i - 1], c = prof[i]; return a[0] + (c[0] - a[0]) * (y - a[1]) / ((c[1] - a[1]) || 1); } return prof[prof.length - 1][0]; };
+  const symPath = pts => { g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); for (let i = pts.length - 1; i >= 0; i--) g.lineTo(-pts[i][0], pts[i][1]); g.closePath(); };
+  const rect = (x, y, w, h, c) => { g.fillStyle = c; g.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); };
+  const sym = (x, y, w, h, c) => { rect(x, y, w, h, c); rect(-x - w, y, w, h, c); };
+  const circ = (x, y, r, c) => { g.fillStyle = c; g.beginPath(); g.arc(x, y, Math.max(.5, r), 0, Math.PI * 2); g.fill(); };
+  const rr = (x, y, w, h, c) => { rect(x + 1, y, w - 2, h, c); rect(x, y + 1, w, h - 2, c); };
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H);
+  g.setTransform(1, 0, 0, -1, W / 2, GY);
+  // Flügel (vorne: hinter dem Dach)
+  const roofT = M.spoiler && M.spoiler.type === 'roof', deck = M.spoiler ? s - M.spoiler.y : top;
+  const stockWing = M.wing && S.heck === 'kein' && kit !== 'breit';
+  const wingY = stockWing ? deck + 16 : S.heck === 'gt' ? deck + (roofT ? 11 : 20) : S.heck === 'fluegel' ? deck + (roofT ? 6 : 8) : null;
+  const wingC = S.heck === 'gt' ? carbonC : pc;
+  const drawWing = () => {
+    if (wingY === null) return; const ww = Math.round(hw * .9);
+    if (rear && !roofT) for (const sx of [-1, 1]) rect(sx * Math.round(hw * .36) - (sx > 0 ? 2 : 0), deck, 2, wingY - deck, '#141518');
+    rect(-ww, wingY, 2 * ww, 3, wingC); rect(-ww, wingY + 2, 2 * ww, 1, S.heck === 'gt' ? '#3e424b' : shade(pc, .3)); rect(-ww, wingY, 2 * ww, 1, shade(pc, -.3));
+    sym(ww, wingY - 4, 2, 9, '#141518');
+  };
+  // Unterboden + Reifen
+  rect(-tx, 2, 2 * tx, Math.max(3, s - 2), '#0c0c0f'); rect(-tx + tw / 2, 4, 2 * tx - tw, 2, '#24252a');
+  for (const sx of [-1, 1]) {
+    const x = Math.round(sx * tx - tw / 2); rr(x, 0, tw, H2, '#121215');
+    const ofr = S.reifen === 'offroad';
+    for (let y = 3, k = 0; y < H2 - 3; y += ofr ? 4 : 3, k++) { rect(x + 2, y, tw - 4, ofr ? 3 : 2, k % 2 ? '#1f2024' : '#191a1e'); rect(x + 2 + (k % 2 ? 1 : Math.floor(tw / 2) - 1), y, 1, 2, '#0e0e11'); }
+    rect(sx > 0 ? x : x + tw - 2, 3, 2, H2 - 6, '#2c2d33'); rect(sx > 0 ? x + tw - 2 : x, 3, 2, H2 - 6, '#232429');
+    if (S.reifen === 'weiss') rect(sx > 0 ? x + tw - 2 : x + 1, R - 4, 1, 8, '#ecebe4');
+  }
+  if (!rear) drawWing();
+  // Verbreiterungen
+  if (flare) for (const sx of [-1, 1]) {
+    const x0 = sx > 0 ? Math.round(hw - 2) : Math.round(-hw - flare + 2), c = kit === 'rallye' ? '#1c1d20' : pc;
+    rect(x0, s + 1, flare, H2 - s + 4, c); rect(x0, H2 + 4, flare, 1, kit === 'rallye' ? '#3a3c41' : shade(pc, .3)); rect(sx > 0 ? x0 + flare - 1 : x0, s + 1, 1, H2 - s + 3, kit === 'rallye' ? '#101113' : shade(pc, -.35));
+    g.fillStyle = '#dfe3e8'; for (let y = s + 4; y < H2 + 2; y += 4) g.fillRect(x0 + (sx > 0 ? flare - 3 : 2), y, 1, 1);
+  }
+  if (S.schweller === 'ja' || (kit && kit !== 'kein')) rect(-hw - 1, s - 4, 2 * hw + 2, 5, kit === 'attack' ? carbonC : kit === 'rallye' ? '#1c1d20' : shade(pc, -.1));
+  // Karosserie
+  symPath(prof); g.fillStyle = pc; g.fill();
+  g.save(); symPath(prof); g.clip();
+  const k = fin === 'matt' ? .5 : 1;
+  if (fin === 'chrom') { rect(-hw - 5, -5, 2 * hw + 10, 200, mix(pc, '#cfd7de', .45)); rect(-hw - 5, bl - 10, 2 * hw + 10, 2, '#3a3f46'); rect(-hw - 5, bl - 8, 2 * hw + 10, 7, mix(pc, '#f3f7fa', .5)); rect(-hw - 5, -5, 2 * hw + 10, s + 8, '#2c2f33'); }
+  else {
+    rect(-hw - 5, -5, 2 * hw + 10, s + 9, shade(pc, -.38 * k)); rect(-hw - 5, s + 4, 2 * hw + 10, 4, shade(pc, -.2 * k)); rect(-hw - 5, bl, 2 * hw + 10, 200, shade(pc, .1 * k));
+    sym(Math.round(hw * .8), -5, Math.round(hw * .25), 200, shade(pc, -.14 * k)); sym(Math.round(hw * .93), -5, 6, 200, shade(pc, -.28 * k));
+    if (fin !== 'matt') { rect(-Math.round(hwAt(bl - 2)) + 2, bl - 2, Math.round(2 * hwAt(bl - 2)) - 4, 1, shade(pc, .45)); rect(-Math.round(hw * .45), top - 2, Math.round(hw * .9), 2, shade(pc, .32)); }
+    if (fin === 'perl') rect(-hw, bl - 10, 2 * hw, 4, mix(pc, '#c9f2ff', .2));
+    if (fin === 'metallic' || fin === 'perl') { let sd = 11; const rn = () => (sd = sd * 16807 % 2147483647) / 2147483647; for (let i = 0; i < 70; i++) rect((rn() * 2 - 1) * hw, s + rn() * (top - s), 1, 1, fin === 'perl' ? mix(pc, i % 2 ? '#ffd0f5' : '#b8fff3', .35) : shade(pc, .3)); }
+  }
+  const lamp = rear ? M.tail : M.head, lt = Math.round(s - lamp[1] + 2);
+  if (fin !== 'chrom' && (rear ? !F.hatch : true) && lt < bl - 1) { const hs = Math.round(hwAt(bl - 1) * .8); rect(-hs, lt, 2 * hs, bl - lt - 1, (!rear && S.haube === 'carbon') ? carbonC : shade(pc, .16 * k)); rect(-hs, lt, 1, bl - lt - 1, shade(pc, -.18)); rect(hs - 1, lt, 1, bl - lt - 1, shade(pc, -.18)); if (!rear && S.haube !== 'carbon') { rect(-Math.round(hs * .5), lt + 2, 1, bl - lt - 4, shade(pc, .3)); rect(Math.round(hs * .5), lt + 2, 1, bl - lt - 4, shade(pc, .3)); } }
+  g.restore();
+  rect(-hwAt(bl), bl, 2 * hwAt(bl), 1, shade(pc, -.5));
+  // Scheibe mit Innenraum
+  const g0 = Math.round(hwAt(bl + 1) - 4), g1 = Math.round(hwAt(top - 2) - 3), gy0 = bl + 1, gy1 = top - 2;
+  const gPath = () => { g.beginPath(); g.moveTo(-g0, gy0); g.lineTo(g0, gy0); g.lineTo(g1, gy1); g.quadraticCurveTo(0, gy1 + 2, -g1, gy1); g.closePath(); };
+  const glass = ['#7fa6bb', '#45606f', '#171c22'][S.toenung]; gPath(); g.fillStyle = glass; g.fill();
+  g.save(); gPath(); g.clip();
+  if (S.toenung < 2) { const ic = shade(glass, -.38);
+    if (!rear) { rect(-g1 + 3, gy0 + 1, 9, 10, ic); rect(g1 - 12, gy0 + 1, 9, 10, ic); g.strokeStyle = shade(glass, -.5); g.lineWidth = 1.4; g.beginPath(); g.arc(Math.round(g0 * .42), gy0 + 4, 4, 0, Math.PI * 2); g.stroke(); rect(-3, gy1 - 4, 6, 2, '#1a1b1f'); rect(-1, gy1 - 2, 2, 2, '#1a1b1f'); }
+    else { rect(-g1 + 4, gy0, 8, 7, ic); rect(g1 - 12, gy0, 8, 7, ic); g.fillStyle = 'rgba(30,10,10,.35)'; for (let y = gy0 + 3; y < gy1 - 2; y += 3) g.fillRect(-g1 + 3, y, 2 * g1 - 6, 1); } }
+  g.fillStyle = 'rgba(255,255,255,.28)'; g.beginPath(); g.moveTo(-g0 + 3, gy0); g.lineTo(-g0 + 9, gy0); g.lineTo(-g1 + 17, gy1); g.lineTo(-g1 + 11, gy1); g.closePath(); g.fill();
+  g.restore(); g.strokeStyle = '#0f1013'; g.lineWidth = 1.4; gPath(); g.stroke();
+  if (rear) { rect(-7, gy1 - 2, 14, 2, on ? '#ff3030' : '#9a1018'); if (F.hatch) { rect(-1, gy0 + 1, 2, 5, '#141518'); g.save(); g.translate(0, gy0 + 5); g.rotate(-.5); g.fillStyle = '#141518'; g.fillRect(-1, 0, 14, 1.4); g.restore(); } }
+  else for (const sx of [-1, 1]) { g.save(); g.translate(sx * Math.round(g0 * .15), gy0 + 1); g.rotate(sx > 0 ? .12 : -.12); g.fillStyle = '#141518'; g.fillRect(sx > 0 ? 0 : -Math.round(g0 * .7), 0, Math.round(g0 * .7), 1.3); g.restore(); }
+  // Spiegel
+  for (const sx of [-1, 1]) { const ax = sx * Math.round(hwAt(bl + 2)); rect(sx > 0 ? ax - 1 : ax - 2, bl + 2, 3, 2, '#141518'); const x = sx > 0 ? ax + 2 : ax - 8; rr(x, bl + 1, 6, 6, '#141518'); rect(x + 1, bl + 2, 4, 4, pc); rect(x + 1, bl + 5, 4, 1, shade(pc, .3)); }
+  if (!rear && F.antenna) rect(Math.round(hw * .4), top - 2, 1, 8, '#141518');
+  // Kompressor schaut aus der Haube
+  if (!rear && S.aufl === 'kompressor' && S.motor !== 'jet') { rect(-9, bl - 4, 18, 9, '#aeb6bf'); g.fillStyle = '#7b838d'; for (let x = -8; x < 9; x += 3) g.fillRect(x, bl - 3, 1, 7); rect(-7, bl + 5, 14, 6, '#1c1d21'); rect(-5, bl + 6, 10, 3, '#3a3d44'); }
+  const plate = y => { rect(-12, y - 1, 24, 9, '#0f1013'); rect(-11, y, 22, 7, '#f2f2ef'); rect(-11, y, 2, 7, '#1d3a8a'); return y; };
+  const plates = [];
+  const plastik = S.stoss === 'plastik';
+  if (plastik) { rect(-hw - 1, s - 1, 2 * hw + 2, 10, '#45474d'); rect(-hw - 1, s + 8, 2 * hw + 2, 1, '#5c5e65'); rect(-hw - 1, s + 4, 2 * hw + 2, 1, '#34363b'); }
+  if (!rear) {
+    const [, , hwL, hhL] = M.head, hc = S.licht === 'xenon' ? (on ? '#eaf4ff' : '#bcd6f2') : (on ? '#fffbe0' : '#e6e1c4');
+    const lw = Math.round(hw * (F.lamp === 'slim' ? .4 : .32)), hh = hhL + 1, hy = Math.round(s - M.head[1] - hhL), L0 = Math.round(hw - 3 - lw);
+    if (F.grille === 'slit') { rect(-hw * .4, hy + 1, hw * .8, 2, DK); rect(-hw * .4, hy + 3, hw * .8, 1, shade(pc, -.4)); }
+    if (F.grille === 'bars') { const gw = Math.round(hw * .42); rect(-gw - 1, hy - 2, 2 * gw + 2, hh + 3, '#c9ced3'); rect(-gw, hy - 1, 2 * gw, hh + 1, DK); for (let y = hy; y < hy + hh; y += 2) rect(-gw + 1, y, 2 * gw - 2, 1, '#8d949b'); circ(0, hy + hh / 2, 2.5, '#c9ced3'); circ(0, hy + hh / 2, 1.5, '#5a6068'); }
+    if (F.grille === 'none') for (const sx of [-1, 1]) rect(sx > 0 ? 5 : -15, bl - 7, 10, 2, DK);
+    for (const sx of [-1, 1]) {
+      const x = sx > 0 ? L0 : -L0 - lw;
+      if (F.lamp === 'trap') { const p = sx > 0 ? [[x, hy], [x + lw, hy + 1], [x + lw, hy + hh], [x + 3, hy + hh]] : [[x + lw, hy], [x, hy + 1], [x, hy + hh], [x + lw - 3, hy + hh]]; rect(x - 1, hy - 1, lw + 2, hh + 2, DK); g.fillStyle = hc; fillPoly(g, p); circ(x + lw / 2, hy + hh / 2, 1.5, on ? '#ffffff' : shade(hc, -.3)); rect(sx > 0 ? x + lw - 3 : x, hy - 3, 3, 2, '#ff9a1f'); }
+      else if (F.lamp === 'twin') { rect(x - 1, hy - 1, lw + 2, hh + 2, '#c9ced3'); rect(x, hy, lw, hh, hc); circ(x + (sx > 0 ? 3 : lw - 3), hy + hh / 2, 2, on ? '#ffffff' : shade(hc, -.3)); circ(x + (sx > 0 ? lw - 4 : 4), hy + hh / 2, 1.5, on ? '#ffffff' : shade(hc, -.2)); rect(sx > 0 ? x + lw - 2 : x, hy, 2, hh, '#ff9a1f'); }
+      else { rect(x - 1, hy - 1, lw + 2, hh + 1, DK); g.fillStyle = hc; fillPoly(g, sx > 0 ? [[x, hy], [x + lw, hy + 2], [x + lw, hy + hh - 1], [x, hy + hh - 2]] : [[x + lw, hy], [x, hy + 2], [x, hy + hh - 1], [x + lw, hy + hh - 2]]); rect(x + 1, hy + hh - 2, lw - 2, 1, on ? '#ffffff' : '#e6eef5'); }
+      if (S.licht === 'boese') { g.fillStyle = shade(pc, .04); fillPoly(g, [[x - 1, hy + hh + 1], [x + lw + 1, hy + hh + 1], [x + lw + 1, hy + (sx > 0 ? hh * .35 : hh * .75)], [x - 1, hy + (sx > 0 ? hh * .75 : hh * .35)]]); }
+    }
+    if (F.intake === 'trap') { g.fillStyle = DK; fillPoly(g, [[-hw * .6, s + 2], [hw * .6, s + 2], [hw * .52, s + 8], [-hw * .52, s + 8]]); rect(-hw * .55, s + 5, hw * 1.1, 1, MESH); }
+    if (F.intake === 'center') { rect(-hw * .45, s + 2, hw * .9, 5, DK); for (let x = -Math.round(hw * .45) + 2; x < hw * .45; x += 3) rect(x, s + 3, 1, 3, MESH); for (const sx of [-1, 1]) { circ(sx * Math.round(hw * .72), s + 5, 2.5, DK); circ(sx * Math.round(hw * .72), s + 5, 1.5, on ? '#fff6d0' : '#d9dde1'); } }
+    if (F.intake === 'race') { rect(-hw * .5, s + 2, hw, 9, DK); for (let y = s + 4; y < s + 10; y += 3) rect(-hw * .5 + 1, y, hw - 2, 1, MESH); for (const sx of [-1, 1]) { g.fillStyle = DK; fillPoly(g, sx > 0 ? [[hw * .62, s + 3], [hw * .9, s + 3], [hw * .9, s + 10], [hw * .7, s + 10]] : [[-hw * .62, s + 3], [-hw * .9, s + 3], [-hw * .9, s + 10], [-hw * .7, s + 10]]); } }
+    plates.push(plate(F.intake === 'race' ? s + 12 : s + (plastik ? 11 : 9)));
+    if (S.haube === 'hutze' && S.aufl !== 'kompressor') { rect(-8, bl - 3, 16, 4, pc); rect(-8, bl, 16, 1, shade(pc, .3)); rect(-6, bl - 2, 12, 2, '#0d0d10'); }
+    if (S.lippe === 'lippe') rect(-hw + 3, s - 3, 2 * hw - 6, 3, '#2a2b30');
+    if (S.lippe === 'splitter') { rect(-hw - 2, s - 4, 2 * hw + 4, 4, carbonC); rect(-hw - 2, s - 1, 2 * hw + 4, 1, '#4a4e57'); }
+    if (kit === 'street') { rect(-hw - 1, s - 5, 2 * hw + 2, 9, pc); rect(-hw - 1, s + 3, 2 * hw + 2, 1, shade(pc, .3)); rect(-hw * .5, s - 3, hw, 6, DK); for (let x = -Math.round(hw * .5) + 1; x < hw * .5; x += 3) rect(x, s - 3, 1, 6, '#3a3d43'); for (const sx of [-1, 1]) { circ(sx * Math.round(hw * .74), s, 2.5, DK); circ(sx * Math.round(hw * .74), s, 1.5, on ? '#fff3a8' : '#ffd85a'); } }
+    if (kit === 'rallye') { rect(-hw * .6, s - 4, hw * 1.2, 4, '#aeb4ba'); for (let x = -Math.round(hw * .6) + 3; x < hw * .6; x += 5) rect(x, s - 2, 2, 1, '#6d737a'); }
+    if (kit === 'attack' || (M.sport && kit === 'kein' && S.lippe === 'kein')) rect(-hw + 2, s - 3, 2 * hw - 4, 3, kit === 'attack' ? carbonC : '#16171b');
+    if (kit === 'breit') { rect(-hw - flare + 2, s - 3, 2 * hw + 2 * flare - 4, 7, pc); rect(-hw * .4, s - 1, hw * .8, 2, DK); }
+  } else {
+    const [, , tlw, thh] = M.tail, sm = S.rueck === 'smoke', red = sm ? (on ? '#7a1820' : '#3b1416') : (on ? '#ff3030' : '#b3121c');
+    const lw = Math.round(hw * (F.lamp === 'slim' ? .36 : F.grille === 'bars' ? .34 : .27)), th = Math.max(4, Math.min(thh, 10)), ty = Math.round(s - M.tail[1] - thh), L0 = Math.round(hw - 3 - lw);
+    g.strokeStyle = shade(pc, -.42); g.lineWidth = 1; if (!F.hatch) g.strokeRect(-L0 + 3.5, ty - 1.5, 2 * L0 - 7, bl - ty - 1); else { g.beginPath(); g.moveTo(-L0 + 2, s + 11); g.lineTo(L0 - 2, s + 11); g.stroke(); }
+    for (const sx of [-1, 1]) {
+      const x = sx > 0 ? L0 : -L0 - lw, iw = Math.max(2, Math.round(lw * .35));
+      rect(x - 1, ty - 1, lw + 2, th + 2, '#1a1b1f'); rect(x, ty, lw, th, red);
+      rect(sx > 0 ? x + lw - iw : x, ty, iw, Math.max(2, Math.round(th / 2)), sm ? '#5a2026' : '#ff9a1f'); rect(sx > 0 ? x : x + lw - iw, ty, iw, Math.max(1, Math.round(th / 3)), sm ? '#5a4a4c' : '#e8e4da');
+      rect(x + 1, ty + th - 1, lw - 2, 1, on ? '#ffb0a0' : shade(red, .3));
+    }
+    if (F.lamp === 'slim') rect(-L0, ty + th - 2, 2 * L0, 1, on ? '#ff4a3a' : shade(red, -.1));
+    if (F.grille === 'bars') rect(-10, ty + th + 2, 20, 1, '#c9ced3');
+    circ(0, ty + th + 4, 1.2, '#c9ced3');
+    const py = s + (plastik ? 11 : 8); rect(-14, py - 2, 28, 11, shade(pc, -.3)); plates.push(plate(py)); rect(-3, py + 8, 2, 1, on ? '#fff6d0' : '#8d949b'); rect(1, py + 8, 2, 1, on ? '#fff6d0' : '#8d949b');
+    sym(Math.round(hw * .72), s + 3, Math.round(hw * .18), 2, '#8f1014'); rect(-hw * .62, s + 1, 4, 2, on ? '#ff3030' : '#7a1218'); rect(hw * .62 - 4, s + 1, 4, 2, '#e8e8e4');
+    if (kit === 'street' || kit === 'breit') { rect(-hw, s - 4, 2 * hw, 5, pc); rect(-hw, s, 2 * hw, 1, shade(pc, .3)); }
+    if (kit === 'street' || kit === 'attack' || (M.sport && kit === 'kein')) { rect(-hw * .6, s - 4, hw * 1.2, 4, '#141518'); for (let x = -Math.round(hw * .6) + 3; x < hw * .6; x += 5) rect(x, s - 6, 1, 6, '#4a4d54'); }
+    if (kit === 'rallye') rect(-hw * .5, s - 4, hw, 4, '#aeb4ba');
+    if (S.heck === 'lippe' || (kit === 'breit' && S.heck === 'kein')) { rect(-hw * .7, deck - 1, hw * 1.4, 3, pc); rect(-hw * .7, deck + 1, hw * 1.4, 1, shade(pc, .3)); }
+    // Endrohre
+    const ch = '#c3cbd4', ey = s - M.exh[1]; let tips = [];
+    if (S.motor === 'jet') tips = [];
+    else if (S.auspuff === 'serie') tips = M.sport ? [[-4, 2], [4, 2]] : [[Math.round(hw * .55), 2]];
+    else if (S.auspuff === 'sport') tips = [[Math.round(hw * .55), 3]];
+    else if (S.auspuff === 'doppel') tips = [[Math.round(hw * .45), 3], [Math.round(hw * .65), 3]];
+    else if (S.auspuff === 'racing') tips = [[Math.round(hw * .5), 4]];
+    for (const [x, r] of tips) { circ(x, ey, r + 1.2, '#141518'); circ(x, ey, r, S.auspuff === 'serie' ? '#45484e' : ch); if (S.auspuff !== 'serie') rect(x - r + 1, ey + r - 1, 2 * r - 2, 1, '#eef2f6'); circ(x, ey, Math.max(1, r - 1.5), '#0b0b0d'); }
+    if (S.motor === 'jet') { circ(0, s + 14, 10, '#2b2f35'); circ(0, s + 14, 8, '#5b626b'); circ(0, s + 14, 6, on ? '#ff9a2a' : '#15171a'); circ(0, s + 14, 3, on ? '#ffe9a8' : '#0b0b0d'); }
+    GEO = { M, ox, sill, wcy, tireR, rimR: 0, archR, emit: tips.map(([x]) => ({ x: Math.round(W / 2 + x), y: GY - ey, dx: (x > 0 ? .3 : -.3), dy: -.4 })).concat(S.motor === 'jet' ? [{ x: Math.round(W / 2), y: GY - s - 14, dx: 0, dy: -.3 }] : []) };
+    drawWing();
+  }
+  // Dach-Anbauten der Bodykits
+  if (kit === 'rallye') { rect(-g1 + 2, top + 1, 2 * g1 - 4, 2, '#151619'); for (let i = 0; i < 4; i++) { const lx = Math.round(-g1 + 6 + i * ((2 * g1 - 12) / 3)); if (rear) { rr(lx - 3, top + 3, 6, 6, '#151619'); rect(lx - 1, top + 5, 2, 2, '#2a2c31'); } else { circ(lx, top + 6, 3.5, '#151619'); circ(lx, top + 6, 2.6, on ? '#ffffff' : '#fff2c4'); } } }
+  if (kit === 'attack') { rect(-5, top - 1, 10, 3, pc); rect(-5, top + 1, 10, 1, shade(pc, .3)); if (!rear) rect(-3, top, 6, 1, '#0d0d10'); }
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  for (const py of plates) ptext(g, 'SG 77', W / 2 - 8, GY - py - 6, 1, '#141518');
+  if (!rear) GEO = { M, ox, sill, wcy, tireR, rimR: 0, archR, emit: [] };
+  crisp(car, '#0d0a10', Math.round(W / 2 - hw - 30), Math.round(GY - top - 40), Math.round(2 * hw + 60), Math.round(top + 46));
+}
+const FR_DEFAULT = { lamp: 'trap', grille: 'slit', intake: 'trap', hatch: 1, prof: [[0, .88], [.15, .96], [.5, 1], [.9, .98], [1, .9]], gprof: [[0, .86], [.8, .7], [1, .6]] };
 
 // ================= ENGINE / AUDIO =================
 const ENG = { on: false, rpm: 0, thr: 0, boost: 0, pop: 0, kick: 0, nosActive: false, nosFuel: 1, prevG: false, smokeT: 0 };
@@ -1025,25 +1231,29 @@ function draw(tm) {
   ctx.drawImage(bg, 0, 0);
   if (!G || MODELS[S.model].pending) { ctx.drawImage(vig, 0, 0); drawHUD(); return; }
   const M = G.M;
-  const cx = G.ox + M.L / 2;
-  ctx.globalAlpha = .5; pxEllipse(ctx, cx, GY, M.L / 2 + 8, 3, '#0a080c'); ctx.globalAlpha = 1;
+  let sx = 1;
+  if (TURN) { TURN.t += 1 / 60 / .34; if (TURN.t >= .5 && !TURN.swapped) { TURN.swapped = true; CARVIEW = TURN.to; PARTS.length = 0; renderCar(); } if (TURN.t >= 1) TURN = null; else sx = Math.max(.04, Math.abs(Math.cos(Math.PI * TURN.t))); }
+  const v = viewOf(), side = v === 0 || v === 2, vw = (side ? M.L : M.wid) * sx;
+  const cx = W / 2;
+  ctx.globalAlpha = .5; pxEllipse(ctx, cx, GY, vw / 2 + 8, 3, '#0a080c'); ctx.globalAlpha = 1;
   if (S.neon !== 'aus') {
     const c = NEON[S.neon], pulse = .85 + .15 * Math.sin(tm / 330);
-    for (let i = 0; i < 6; i++) { ctx.globalAlpha = (.14 + i * .07) * pulse; pxEllipse(ctx, cx, GY + 1, M.L / 2 + 24 - i * 12, 12 - i * 2, c); }
+    for (let i = 0; i < 6; i++) { ctx.globalAlpha = (.14 + i * .07) * pulse; pxEllipse(ctx, cx, GY + 1, Math.max(6, vw / 2 + 24 - i * 12), 12 - i * 2, c); }
     ctx.globalAlpha = 1;
   }
-  drawDyno();
-  if (ENG.on) {
+  if (side && !TURN) { if (v === 2) { ctx.save(); ctx.translate(W, 0); ctx.scale(-1, 1); drawDyno(); ctx.restore(); } else drawDyno(); }
+  if (ENG.on && v === 0 && !TURN) {
     const [hx, hy, hw, hh] = M.head, x = G.ox + hx + hw, y = G.sill + hy;
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = S.licht === 'xenon' ? 'rgba(120,170,255,.11)' : 'rgba(255,230,160,.09)';
     fillPoly(ctx, [[x, y], [W + 10, y - 22], [W + 10, GY + 40], [x, y + hh]]); ctx.restore();
   }
   const shake = ENG.on && S.motor !== 'jet' && ENG.rpm < 1600 && (Math.floor(tm / (ENG.rpm > 0 ? 45 : 999)) % 2) ? 1 : 0;
-  ctx.drawImage(car, 0, shake);
-  if (S.neon !== 'aus' && G.sill < GY - 1) { const ny = Math.min(GY - 2, G.sill + 1 + (S.bodykit !== 'kein' || S.schweller === 'ja' ? 3 : 0)) + shake, nx = G.ox + M.rw + G.archR, nw = M.fw - M.rw - 2 * G.archR; ctx.fillStyle = NEON[S.neon]; ctx.fillRect(nx, ny, nw, 2); ctx.globalAlpha = .4; ctx.fillRect(nx - 4, ny + 2, nw + 8, 2); ctx.globalAlpha = 1; }
+  ctx.setTransform(sx, 0, 0, 1, W / 2 * (1 - sx), 0); ctx.drawImage(car, 0, shake); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (S.neon !== 'aus' && G.sill < GY - 1) { const ny = Math.min(GY - 2, G.sill + 1 + (S.bodykit !== 'kein' || S.schweller === 'ja' ? 3 : 0)) + shake, nw0 = side ? M.fw - M.rw - 2 * G.archR : M.wid - 24, nw = Math.round(nw0 * sx), nx0 = side ? G.ox + M.rw + G.archR : W / 2 - nw0 / 2, nx = Math.round(W / 2 + (((v === 2 ? W - nx0 - nw0 : nx0) - W / 2) * sx)); ctx.fillStyle = NEON[S.neon]; ctx.fillRect(nx, ny, nw, 2); ctx.globalAlpha = .4; ctx.fillRect(nx - 4, ny + 2, nw + 8, 2); ctx.globalAlpha = 1; }
   drawParticles();
   ctx.drawImage(vig, 0, 0);
   drawHUD();
+  if (viewLabelT > 0) { viewLabelT -= 1 / 60; const lab = VIEWNAMES[TURN ? TURN.to : CARVIEW], w = ptw(lab, 1) + 10, x = Math.round(W / 2 - w / 2), y = GY + 22; ctx.globalAlpha = Math.min(1, viewLabelT); ctx.fillStyle = 'rgba(10,8,14,.84)'; ctx.fillRect(x, y, w, 15); ptext(ctx, lab, x + 5, y + 3, 1, '#ffcc3d'); for (let i = 0; i < 4; i++) { ctx.fillStyle = i === (TURN ? TURN.to : CARVIEW) ? '#ffcc3d' : '#5a5266'; ctx.fillRect(Math.round(W / 2 - 22 + i * 12), y + 10, 8, 2); } ctx.globalAlpha = 1; }
 }
 
 let last = 0;
@@ -1202,6 +1412,11 @@ function initUI() {
     else if (e.code === 'KeyS') { brakeHeld = false; keyCls('#pedBrake', false); }
     else if (e.code === 'KeyN') { nosHeld = false; gasHeld = false; keyCls('#btnNos', false); }
   });
+  { let px = null, used = false;
+    cv.addEventListener('pointerdown', e => { if (MODE !== 'garage') return; px = e.clientX; used = false; try { cv.setPointerCapture(e.pointerId); } catch (_) { } });
+    cv.addEventListener('pointermove', e => { if (px === null || used) return; const dx = e.clientX - px; if (Math.abs(dx) > Math.max(30, cv.clientWidth * .05)) { used = true; rotateView(dx < 0 ? 1 : -1); } });
+    const end = () => { px = null; }; cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end); }
+  window.addEventListener('keydown', e => { if (typing(e) || e.target.type === 'range' || MODE !== 'garage') return; if (e.code === 'ArrowLeft') { e.preventDefault(); rotateView(-1); } else if (e.code === 'ArrowRight') { e.preventDefault(); rotateView(1); } });
   window.addEventListener('blur', () => { gasHeld = false; nosHeld = false; brakeHeld = false; });
   window.addEventListener('resize', setWorld);
   updateGearUI();
