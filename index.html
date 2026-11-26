@@ -985,10 +985,10 @@ function renderFR(rear) {
     // Endrohre
     const ch = '#c3cbd4', ey = s - M.exh[1]; let tips = [];
     if (S.motor === 'jet') tips = [];
-    else if (S.auspuff === 'serie') tips = M.sport ? [[-4, 2], [4, 2]] : [[Math.round(hw * .55), 2]];
-    else if (S.auspuff === 'sport') tips = [[Math.round(hw * .55), 3]];
-    else if (S.auspuff === 'doppel') tips = [[Math.round(hw * .45), 3], [Math.round(hw * .65), 3]];
-    else if (S.auspuff === 'racing') tips = [[Math.round(hw * .5), 4]];
+    else if (S.auspuff === 'serie') tips = M.sport ? [[-5, 3], [5, 3]] : [[Math.round(hw * .55), 3]];
+    else if (S.auspuff === 'sport') tips = [[Math.round(hw * .55), 4]];
+    else if (S.auspuff === 'doppel') tips = [[Math.round(hw * .42), 4], [Math.round(hw * .66), 4]];
+    else if (S.auspuff === 'racing') tips = [[Math.round(hw * .5), 5]];
     for (const [x, r] of tips) { circ(x, ey, r + 1.2, '#141518'); circ(x, ey, r, S.auspuff === 'serie' ? '#45484e' : ch); if (S.auspuff !== 'serie') rect(x - r + 1, ey + r - 1, 2 * r - 2, 1, '#eef2f6'); circ(x, ey, Math.max(1, r - 1.5), '#0b0b0d'); }
     if (S.motor === 'jet') { circ(0, s + 14, 10, '#2b2f35'); circ(0, s + 14, 8, '#5b626b'); circ(0, s + 14, 6, on ? '#ff9a2a' : '#15171a'); circ(0, s + 14, 3, on ? '#ffe9a8' : '#0b0b0d'); }
     GEO = { M, ox, sill, wcy, tireR, rimR: 0, archR, emit: tips.map(([x]) => ({ x: Math.round(W / 2 + x), y: GY - ey, dx: (x > 0 ? .3 : -.3), dy: -.4 })).concat(S.motor === 'jet' ? [{ x: Math.round(W / 2), y: GY - s - 14, dx: 0, dy: -.3 }] : []) };
