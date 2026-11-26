@@ -27,6 +27,12 @@ Dieses Projekt wird von **zwei Leuten** entwickelt, jeweils mit eigenem Claude. 
 
 Weitere Dateien: `impressum.html`, `datenschutz.html` (teilen sich `legal.css`), verlinkt unten im Startbildschirm.
 
+### Installierbare App (PWA)
+
+- `manifest.webmanifest` (Name, Querformat, Icons) und `icons/` (192, 512, maskable, Apple-Touch-Icon) machen das Spiel am Handy über „Zum Startbildschirm“ installierbar.
+- `sw.js` ist der Service Worker: **Netz zuerst**, Cache nur offline. Updates kommen also ohne Versionssprung an.
+- **Neue Datei, die offline gebraucht wird** (z. B. eine weitere `.html` oder Schrift): in `FILES` in `sw.js` eintragen und `CACHE` hochzählen (`ptg-v1` → `ptg-v2`).
+
 ### Drift-Modus (`drift.html`)
 
 Eigener Spielmodus in eigener Datei (Ausnahme von „eine Datei“, damit sich beide nicht in `index.html` in die Quere kommen). Erreichbar über den Knopf **DRIFT** oben rechts in der Garage (`#btnDrift`), zurück über „◀ Garage“.
