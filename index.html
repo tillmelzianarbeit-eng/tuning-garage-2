@@ -371,6 +371,7 @@ function defaults(model = 'pikko') {
   return { model, motor: 'serie', aufl: 'sauger', soft: 'serie', nitro: 'kein', auspuff: 'serie', schaltung: 'auto', getriebe: 'serie', achse: 'serie', fahrwerk: 'serie', hoehe: 0, bremsen: 'serie', felge: 'stahl', zoll: M.rimBase, felgenfarbe: model === 'pikko' ? 'gun' : 'silber', reifen: 'serie', lippe: 'kein', schweller: 'kein', breitbau: 'kein', bodykit: 'kein', heck: 'kein', haube: 'serie', stoss: M.defStoss, farbe: M.defColor, finish: 'uni', dekor: 'kein', dekorfarbe: '#ffffff', nummer: '', toenung: 0, blende: 'kein', licht: 'serie', rueck: 'serie', neon: 'aus' };
 }
 let S = defaults();
+let BUILDS = {}; // eigener Tuningstand pro Auto (Schlüssel = Modell)
 const rimColor = id => id === 'wagen' ? S.farbe : RIMC[id];
 
 // ================= STATS =================
@@ -1327,8 +1328,8 @@ function statsHTML() {
   <div class="bill"><div class="bh">WERKSTATT-RECHNUNG</div>${s.bill.length ? s.bill.map(([n, p]) => `<div class="bli"><span>${n}</span><b>${fmtEur(p)}</b></div>`).join('') : '<div class="bli muted">Noch alles Serie.</div>'}<div class="bt"><span>Gesamt</span><b>${fmtEur(s.price)}</b></div></div>`;
 }
 function toggleMute() { muted = !muted; $('#btnMute').classList.toggle('off', muted); if (curTab === 'werte') renderOpts(); }
-function save() { try { localStorage.setItem('ptg-build-v1', JSON.stringify(S)); } catch (e) { } }
-function load() { try { const j = JSON.parse(localStorage.getItem('ptg-build-v1') || 'null'); if (j && MODELS[j.model]) S = Object.assign(defaults(j.model), j); } catch (e) { } }
+function save() { try { BUILDS[S.model] = S; localStorage.setItem('ptg-build-v1', JSON.stringify(S)); localStorage.setItem('ptg-builds-v1', JSON.stringify(BUILDS)); } catch (e) { } }
+function load() { try { const all = JSON.parse(localStorage.getItem('ptg-builds-v1') || 'null'); if (all && typeof all === 'object') for (const id in all) if (MODELS[id] && all[id]) BUILDS[id] = Object.assign(defaults(id), all[id], { model: id }); const j = JSON.parse(localStorage.getItem('ptg-build-v1') || 'null'); if (j && MODELS[j.model]) S = Object.assign(defaults(j.model), j); BUILDS[S.model] = S; } catch (e) { } }
 function changed(re) {
   STATS = calc(); DRV.D = null; dirty = true;
   const n = (GBX[S.getriebe] || GBX.serie).n; if (DRV.gear > n) DRV.gear = n; if (DRV.shiftTo > n) DRV.shiftTo = n;
@@ -1336,6 +1337,11 @@ function changed(re) {
 }
 function setVal(k, v) {
   if (k === 'toenung') v = +v;
+  if (k === 'model') { // jedes Auto behält sein eigenes Tuning
+    delArm = null; if (v === S.model) { changed(true); return; }
+    BUILDS[S.model] = S; S = BUILDS[v] ? Object.assign(defaults(v), BUILDS[v], { model: v }) : defaults(v); BUILDS[v] = S;
+    changed(true); return;
+  }
   S[k] = v; delArm = null;
   if (k === 'model') { const M = MODELS[v]; S.stoss = M.defStoss; if (S.zoll < M.rimBase) S.zoll = M.rimBase; if (M.custom) { S.toenung = 0; S.licht = 'serie'; S.rueck = 'serie'; S.farbe = M.defColor; } }
   if (k === 'fahrwerk') { const [mn, mx] = HRANGE[v]; S.hoehe = mn === mx ? mn : (v === 'gewinde' ? -40 : -60); }
@@ -1343,11 +1349,13 @@ function setVal(k, v) {
   changed(true);
 }
 function randomize() {
+  const prev = Object.assign({}, S);
   for (const c of CATS) for (const g of c.groups) if (g.opts) S[g.key] = pick(g.opts)[0];
   S.model = pick(Object.keys(MODELS).filter(k => !MODELS[k].pending)); if (MODELS[S.model].custom) { S.toenung = 0; S.licht = 'serie'; S.rueck = 'serie'; S.stoss = 'lack'; } S.motor = Math.random() < .06 ? 'jet' : pick(['serie', 'serie', 'r4', 'v6', 'v8', 'v12']);
   S.farbe = pick(PAINTS)[0]; S.dekorfarbe = pick(DECOR)[0];
   const [mn, mx] = HRANGE[S.fahrwerk]; S.hoehe = mn + Math.round((mx - mn) * Math.random() / 5) * 5;
   S.zoll = MODELS[S.model].rimBase + Math.floor(Math.random() * 5); S.nummer = Math.random() < .35 ? String(1 + Math.floor(Math.random() * 98)) : '';
+  if (S.model !== prev.model) BUILDS[prev.model] = prev; // das vorige Auto behält sein Tuning
   changed(true);
 }
 function toggleEngine() {
@@ -1691,8 +1699,8 @@ function registerCustom(rec, onReady) {
 }
 function loadCustoms() { try { CUSTOMS = JSON.parse(localStorage.getItem(CKEY) || '[]'); } catch (e) { CUSTOMS = []; } if (!Array.isArray(CUSTOMS)) CUSTOMS = []; for (const r of CUSTOMS) registerCustom(r); }
 function deleteCustom(id) {
-  CUSTOMS = CUSTOMS.filter(r => r.id !== id); delete MODELS[id]; saveCustoms();
-  if (S.model === id) { S = defaults('pikko'); changed(true); } else renderOpts();
+  CUSTOMS = CUSTOMS.filter(r => r.id !== id); delete MODELS[id]; delete BUILDS[id]; saveCustoms();
+  if (S.model === id) { S = BUILDS.pikko || defaults('pikko'); changed(true); } else renderOpts();
 }
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.add('hidden'), 3600); }
 
