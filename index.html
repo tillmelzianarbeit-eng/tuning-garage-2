@@ -274,6 +274,18 @@ const MODELS = {
     spoiler: { x: 6, y: -41, type: 'trunk' }, hood: [[200, -46], [232, -41], [248, -38], [255, -33]], scoop: 212, blower: 216, exh: [6, -2],
     wid: 88, fr: { lamp: 'twin', grille: 'bars', intake: 'center', hatch: 0, antenna: 1, prof: [[0, .9], [.12, .97], [.5, 1], [.9, .99], [1, .94]], gprof: [[0, .84], [.85, .62], [1, .52]] }
   },
+  kombi: {
+    name: "Ruta '01", desc: 'Mittelklasse · Kombi', L: 262, rw: 56, fw: 206, tire: 17, dy: 7, rimBase: 15, ps: 125, kg: 1420, cyl: 4, red: 6200, hand: 43, aero: 1.03, defStoss: 'lack', defColor: '#c8ccd2',
+    out: [[3, 0], [0, -7], [0, -34], [1, -46], [4, -62], [8, -70], [14, -72], [60, -73], [158, -73], [172, -69], [202, -46], [234, -41], [250, -38], [257, -33], [262, -24], [262, -8], [259, 0]],
+    glass: [[11, -46], [12, -61], [17, -69], [60, -70], [158, -70], [169, -66], [196, -46]],
+    pillars: [[44, 50], [128, 132]], belt: -46, crease: -41,
+    doors: [[67, -46, -3], [131, -46, -3], [199, -46, -4]], handles: [[74, -39], [140, -39]], mirror: [192, -48],
+    head: [250, -36, 10, 6], ind: [253, -29, 6, 2], tail: [0, -52, 5, 15],
+    bumpers: [[0, 11, -17, 0], [247, 262, -18, 0]], molding: [12, 247, -19, 2], num: [168, -27], fuel: [32, -38],
+    spoiler: { x: 12, y: -71, type: 'roof' }, hood: [[202, -46], [234, -41], [250, -38], [257, -33]], scoop: 214, blower: 218, exh: [7, -2],
+    rails: true,
+    wid: 90, fr: { lamp: 'twin', grille: 'slit', intake: 'center', hatch: 1, antenna: 1, prof: [[0, .9], [.12, .97], [.5, 1], [.9, .99], [1, .94]], gprof: [[0, .86], [.85, .7], [1, .62]] }
+  },
   falke: {
     name: 'Falke RS', desc: 'Sportwagen · Coupé', L: 232, rw: 46, fw: 182, tire: 16, dy: 5, rimBase: 19, ps: 520, kg: 1450, cyl: 6, red: 9000, hand: 62, aero: .98, defStoss: 'lack', defColor: '#ff7a1a',
     out: [[4, 0], [1, -5], [0, -18], [2, -26], [6, -32], [22, -34], [42, -37], [62, -46], [80, -52], [114, -53], [136, -49], [160, -35], [192, -30], [213, -25], [225, -20], [230, -14], [232, -8], [230, 0]],
@@ -347,6 +359,7 @@ const CATS = [
     { key: 'dekorfarbe', label: 'Dekorfarbe', type: 'color' },
     { key: 'nummer', label: 'Startnummer', type: 'number' },
     { key: 'toenung', label: 'Scheibentönung', opts: [[0, 'Klar', 0, ''], [1, 'Leicht getönt', 150, ''], [2, 'Limo-Schwarz', 250, '']] },
+    { key: 'blende', label: 'Sonnenblende (Frontscheibe)', opts: [['kein', 'Keine', 0, ''], ['schwarz', 'Schwarz', 40, ''], ['tuning', 'Schwarz mit TUNING', 60, ''], ['driftking', 'DriftKing', 60, '']] },
     { key: 'licht', label: 'Scheinwerfer', opts: [['serie', 'Serie', 0, ''], ['xenon', 'Xenon-Look', 300, ''], ['boese', 'Böser Blick', 90, '']] },
     { key: 'rueck', label: 'Rückleuchten', opts: [['serie', 'Serie', 0, ''], ['smoke', 'Getönt', 140, '']] },
     { key: 'neon', label: 'Unterbodenbeleuchtung', type: 'swatch', opts: [['aus', 'Aus', '#2a2430'], ['pink', 'Pink', NEON.pink], ['blau', 'Blau', NEON.blau], ['gruen', 'Grün', NEON.gruen], ['lila', 'Lila', NEON.lila], ['cyan', 'Cyan', NEON.cyan], ['rot', 'Rot', NEON.rot]] }
@@ -355,7 +368,7 @@ const CATS = [
 
 function defaults(model = 'pikko') {
   const M = MODELS[model];
-  return { model, motor: 'serie', aufl: 'sauger', soft: 'serie', nitro: 'kein', auspuff: 'serie', schaltung: 'auto', getriebe: 'serie', achse: 'serie', fahrwerk: 'serie', hoehe: 0, bremsen: 'serie', felge: 'stahl', zoll: M.rimBase, felgenfarbe: model === 'pikko' ? 'gun' : 'silber', reifen: 'serie', lippe: 'kein', schweller: 'kein', breitbau: 'kein', bodykit: 'kein', heck: 'kein', haube: 'serie', stoss: M.defStoss, farbe: M.defColor, finish: 'uni', dekor: 'kein', dekorfarbe: '#ffffff', nummer: '', toenung: 0, licht: 'serie', rueck: 'serie', neon: 'aus' };
+  return { model, motor: 'serie', aufl: 'sauger', soft: 'serie', nitro: 'kein', auspuff: 'serie', schaltung: 'auto', getriebe: 'serie', achse: 'serie', fahrwerk: 'serie', hoehe: 0, bremsen: 'serie', felge: 'stahl', zoll: M.rimBase, felgenfarbe: model === 'pikko' ? 'gun' : 'silber', reifen: 'serie', lippe: 'kein', schweller: 'kein', breitbau: 'kein', bodykit: 'kein', heck: 'kein', haube: 'serie', stoss: M.defStoss, farbe: M.defColor, finish: 'uni', dekor: 'kein', dekorfarbe: '#ffffff', nummer: '', toenung: 0, blende: 'kein', licht: 'serie', rueck: 'serie', neon: 'aus' };
 }
 let S = defaults();
 const rimColor = id => id === 'wagen' ? S.farbe : RIMC[id];
@@ -386,7 +399,7 @@ function calc() {
   const hand = Math.round(Math.max(1, Math.min(100, h)));
   let st = ({ uni: 0, metallic: 8, matt: 12, perl: 14, chrom: 18 })[S.finish]; if (S.felge !== 'stahl') st += 10; st += Math.max(0, S.zoll - M.rimBase) * 2;
   st += ({ kein: 0, seite: 6, rallye: 9, flammen: 12 })[S.dekor]; if (S.neon !== 'aus') st += 10; if (S.breitbau === 'ja') st += 14; st += ({ kein: 0, lippe: 3, fluegel: 7, gt: 11 })[S.heck];
-  st += ({ kein: 0, lippe: 4, splitter: 7 })[S.lippe]; if (S.schweller === 'ja') st += 4; st += ({ kein: 0, street: 12, rallye: 12, attack: 14, breit: 16 })[S.bodykit] || 0; st += [0, 4, 7][S.toenung]; st += Math.max(0, -S.hoehe) / 6; st += ({ serie: 0, xenon: 3, boese: 5 })[S.licht];
+  st += ({ kein: 0, lippe: 4, splitter: 7 })[S.lippe]; if (S.schweller === 'ja') st += 4; st += ({ kein: 0, street: 12, rallye: 12, attack: 14, breit: 16 })[S.bodykit] || 0; st += [0, 4, 7][S.toenung]; st += ({ kein: 0, schwarz: 2, tuning: 3, driftking: 4 })[S.blende] || 0; st += Math.max(0, -S.hoehe) / 6; st += ({ serie: 0, xenon: 3, boese: 5 })[S.licht];
   if (S.rueck === 'smoke') st += 3; st += ({ serie: 0, hutze: 5, carbon: 7 })[S.haube]; if (S.aufl === 'kompressor' && !jet) st += 9; st += ({ serie: 0, sport: 2, doppel: 4, racing: 6, seite: 8 })[S.auspuff];
   if (S.nummer !== '') st += 4; if (S.reifen === 'weiss' || S.reifen === 'offroad') st += 6; if (S.bremsen !== 'serie' && S.felge !== 'stahl' && S.felge !== 'aero') st += 4;
   if (S.farbe.toLowerCase() !== M.defColor) st += 4; if (jet) st += 15; if (S.fahrwerk === 'offroad') st += 6; if (S.stoss !== M.defStoss) st += 3;
@@ -768,6 +781,7 @@ function renderSide() {
   b.fillStyle = mix(tint, '#ffffff', S.toenung == 2 ? .12 : .32);
   for (const sx of [.36, .63]) { const gx = ox + M.L * sx; fillPoly(b, [[gx, sill - 76], [gx + 7, sill - 76], [gx - 12, sill - 38], [gx - 19, sill - 38]]); }
   b.fillStyle = shade(tint, -.1); b.fillRect(ox, sill + M.belt - 3, M.L, 3);
+  if (S.blende && S.blende !== 'kein') { const gx = M.pillars.length ? Math.max(...M.pillars.map(p => p[1])) : 0, gy = Math.min(...M.glass.map(p => p[1])); b.fillStyle = '#0e0f12'; b.fillRect(ox + gx, sill + gy, M.L - gx, 5); }
   b.restore();
   b.globalCompositeOperation = 'source-atop';
   b.fillStyle = pillarC; for (const [p0, p1] of M.pillars) b.fillRect(ox + p0, sill - 76, p1 - p0, 76 + M.belt);
@@ -815,6 +829,7 @@ function renderSide() {
   drawSpoiler(g, M, ox, sill, base);
   drawBodykit(g, M, ox, sill, archR, acy, base);
   if (M.sport) drawFalkeExtras(g, M, ox, sill, archR, acy, base);
+  if (M.rails) { const y = sill + Math.min(...M.out.map(p => p[1])), x0 = ox + 20, x1 = ox + 160; g.fillStyle = '#1c1d21'; g.fillRect(x0, y - 4, x1 - x0, 2); for (const x of [x0, Math.round((x0 + x1) / 2), x1 - 4]) g.fillRect(x, y - 3, 4, 3); g.fillStyle = '#4a4d54'; g.fillRect(x0 + 1, y - 4, x1 - x0 - 2, 1); }
   if (S.aufl === 'kompressor' && S.motor !== 'jet') {
     const X = ox + M.blower, Y = Math.round(sill + hoodY(M, M.blower)) + 1;
     g.fillStyle = '#aeb6bf'; g.fillRect(X - 10, Y - 9, 22, 9); for (let i = 0; i < 22; i += 3) { g.fillStyle = '#7b838d'; g.fillRect(X - 10 + i, Y - 8, 1, 7); }
@@ -927,6 +942,7 @@ function renderFR(rear) {
     if (!rear) { rect(-g1 + 3, gy0 + 1, 9, 10, ic); rect(g1 - 12, gy0 + 1, 9, 10, ic); g.strokeStyle = shade(glass, -.5); g.lineWidth = 1.4; g.beginPath(); g.arc(Math.round(g0 * .42), gy0 + 4, 4, 0, Math.PI * 2); g.stroke(); rect(-3, gy1 - 4, 6, 2, '#1a1b1f'); rect(-1, gy1 - 2, 2, 2, '#1a1b1f'); }
     else { rect(-g1 + 4, gy0, 8, 7, ic); rect(g1 - 12, gy0, 8, 7, ic); g.fillStyle = 'rgba(30,10,10,.35)'; for (let y = gy0 + 3; y < gy1 - 2; y += 3) g.fillRect(-g1 + 3, y, 2 * g1 - 6, 1); } }
   g.fillStyle = 'rgba(255,255,255,.28)'; g.beginPath(); g.moveTo(-g0 + 3, gy0); g.lineTo(-g0 + 9, gy0); g.lineTo(-g1 + 17, gy1); g.lineTo(-g1 + 11, gy1); g.closePath(); g.fill();
+  const blende = !rear && S.blende && S.blende !== 'kein'; if (blende) { rect(-g0 - 2, gy1 - 8, 2 * g0 + 4, 11, '#0e0f12'); rect(-g0 - 2, gy1 - 8, 2 * g0 + 4, 1, '#2a2c31'); }
   g.restore(); g.strokeStyle = '#0f1013'; g.lineWidth = 1.4; gPath(); g.stroke();
   if (rear) { rect(-7, gy1 - 2, 14, 2, on ? '#ff3030' : '#9a1018'); if (F.hatch) { rect(-1, gy0 + 1, 2, 5, '#141518'); g.save(); g.translate(0, gy0 + 5); g.rotate(-.5); g.fillStyle = '#141518'; g.fillRect(-1, 0, 14, 1.4); g.restore(); } }
   else for (const sx of [-1, 1]) { g.save(); g.translate(sx * Math.round(g0 * .15), gy0 + 1); g.rotate(sx > 0 ? .12 : -.12); g.fillStyle = '#141518'; g.fillRect(sx > 0 ? 0 : -Math.round(g0 * .7), 0, Math.round(g0 * .7), 1.3); g.restore(); }
@@ -996,9 +1012,12 @@ function renderFR(rear) {
   }
   // Dach-Anbauten der Bodykits
   if (kit === 'rallye') { rect(-g1 + 2, top + 1, 2 * g1 - 4, 2, '#151619'); for (let i = 0; i < 4; i++) { const lx = Math.round(-g1 + 6 + i * ((2 * g1 - 12) / 3)); if (rear) { rr(lx - 3, top + 3, 6, 6, '#151619'); rect(lx - 1, top + 5, 2, 2, '#2a2c31'); } else { circ(lx, top + 6, 3.5, '#151619'); circ(lx, top + 6, 2.6, on ? '#ffffff' : '#fff2c4'); } } }
+  if (M.rails) for (const sx of [-1, 1]) { rect(sx * (g1 - 2) - (sx > 0 ? 3 : 0), top - 1, 3, 5, '#1c1d21'); rect(sx * (g1 - 2) - (sx > 0 ? 3 : 0), top + 3, 3, 1, '#4a4d54'); }
   if (kit === 'attack') { rect(-5, top - 1, 10, 3, pc); rect(-5, top + 1, 10, 1, shade(pc, .3)); if (!rear) rect(-3, top, 6, 1, '#0d0d10'); }
   g.setTransform(1, 0, 0, 1, 0, 0);
   for (const py of plates) ptext(g, 'SG 77', W / 2 - 8, GY - py - 6, 1, '#141518');
+  if (blende && S.blende === 'tuning') ptext(g, 'TUNING', W / 2 - 11, GY - gy1 + 1, 1, '#f2f2ef');
+  if (blende && S.blende === 'driftking') { ptext(g, 'DRIFT', W / 2 - 17, GY - gy1 + 1, 1, '#f2f2ef'); ptext(g, 'KING', W / 2 + 3, GY - gy1 + 1, 1, '#ff3b3b'); }
   if (!rear) GEO = { M, ox, sill, wcy, tireR, rimR: 0, archR, emit: [] };
   crisp(car, '#0d0a10', Math.round(W / 2 - hw - 30), Math.round(GY - top - 40), Math.round(2 * hw + 60), Math.round(top + 46));
 }
